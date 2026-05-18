@@ -4,8 +4,10 @@ import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, s
 import { CSS } from '@dnd-kit/utilities'
 import Hand from './Hand'
 import PokerTable from './PokerTable'
+import Timer from './Timer'
 
 function checkAnswer(q, answer) {
+  if (answer == null) return false
   if (q.type === 'choice') return answer === q.correctIndex
   if (q.type === 'numeric') {
     const tol = q.tolerance ?? 0
@@ -22,23 +24,36 @@ function checkAnswer(q, answer) {
   return false
 }
 
-export default function QuestionView({ q, onAnswer, isLast, difficulty }) {
+export default function QuestionView({ q, onAnswer, isLast, difficulty, timeLimit }) {
   const [revealed, setRevealed] = useState(false)
   const [userAnswer, setUserAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(false)
+  const [timedOut, setTimedOut] = useState(false)
 
   const submit = (answer) => {
+    if (revealed) return
     const correct = checkAnswer(q, answer)
     setUserAnswer(answer)
     setIsCorrect(correct)
     setRevealed(true)
   }
 
-  const next = () => onAnswer({ isCorrect, userAnswer })
+  const handleExpire = () => {
+    if (revealed) return
+    setTimedOut(true)
+    setUserAnswer(null)
+    setIsCorrect(false)
+    setRevealed(true)
+  }
+
+  const next = () => onAnswer({ isCorrect, userAnswer, timedOut })
 
   return (
     <div className="screen">
-      <div className="difficulty-tag" data-level={difficulty}>{difficultyLabel(difficulty)}</div>
+      <div className="question-header">
+        <div className="difficulty-tag" data-level={difficulty}>{difficultyLabel(difficulty)}</div>
+        {timeLimit && <Timer seconds={timeLimit} paused={revealed} onExpire={handleExpire} />}
+      </div>
 
       {q.table && <PokerTable highlight={q.table.highlight} seats={q.table.seats || 9} />}
       {q.hand && <Hand {...q.hand} />}
@@ -61,8 +76,8 @@ export default function QuestionView({ q, onAnswer, isLast, difficulty }) {
 
       {revealed && (
         <>
-          <div className={`explanation ${isCorrect ? 'good' : 'bad'}`}>
-            <strong>{isCorrect ? '✓ Верно.' : '✗ Неверно.'}</strong> {q.explanation}
+          <div className={`explanation ${isCorrect ? 'good' : timedOut ? 'timeout' : 'bad'}`}>
+            <strong>{isCorrect ? '✓ Верно.' : timedOut ? '⏱ Время вышло.' : '✗ Неверно.'}</strong> {q.explanation}
           </div>
           <button className="primary" onClick={next}>
             {isLast ? 'Итоги →' : 'Дальше →'}
@@ -107,7 +122,7 @@ function NumericInput({ q, revealed, userValue, onSubmit }) {
         <input
           type="number"
           step={q.step ?? 'any'}
-          value={revealed ? userValue ?? '' : val}
+          value={revealed ? (userValue ?? '') : val}
           disabled={revealed}
           onChange={(e) => setVal(e.target.value)}
           placeholder={q.placeholder ?? 'Введите число'}
@@ -136,19 +151,19 @@ function NumericInput({ q, revealed, userValue, onSubmit }) {
 function SliderInput({ q, revealed, userValue, onSubmit }) {
   const initial = (q.sliderMin ?? 0) + Math.round(((q.sliderMax ?? 100) - (q.sliderMin ?? 0)) / 2)
   const [val, setVal] = useState(initial)
-  const display = revealed ? userValue : val
+  const display = revealed ? (userValue ?? q.sliderMin ?? 0) : val
   const [min, max] = q.correctRange
   return (
     <div className="slider-input">
       <div className="slider-display">
-        <span className="slider-value">{display}{q.unit ?? ''}</span>
+        <span className="slider-value">{revealed && userValue == null ? '—' : `${display}${q.unit ?? ''}`}</span>
       </div>
       <input
         type="range"
         min={q.sliderMin ?? 0}
         max={q.sliderMax ?? 200}
         step={q.sliderStep ?? 5}
-        value={revealed ? userValue : val}
+        value={revealed ? (userValue ?? q.sliderMin ?? 0) : val}
         disabled={revealed}
         onChange={(e) => setVal(parseFloat(e.target.value))}
       />
@@ -185,7 +200,7 @@ function DnDSortInput({ q, revealed, userOrder, isCorrect, onSubmit }) {
     })
   }
 
-  const displayItems = revealed ? userOrder : items
+  const displayItems = revealed ? (userOrder ?? items) : items
 
   return (
     <div className="dnd-sort">

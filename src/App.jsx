@@ -70,6 +70,7 @@ export default function App() {
           key={`${section.id}-${questionIdx}-${question.id}`}
           q={question}
           difficulty={section.id}
+          timeLimit={section.timeLimit}
           isLast={isLast}
           onAnswer={handleAnswer}
         />
@@ -108,6 +109,7 @@ function Welcome({ onStart }) {
           <div key={s.id} className={`section-card section-${s.id}`}>
             <div className="section-title">{s.title}</div>
             <div className="section-points">{s.points} {pointWord(s.points)} × 10</div>
+            <div className="section-time">⏱ {s.timeLimit}с на ответ</div>
             <div className="section-subtitle">{s.subtitle}</div>
           </div>
         ))}
@@ -116,6 +118,7 @@ function Welcome({ onStart }) {
       <ul className="info">
         <li>Вопросы выбираются случайно из пула — каждое прохождение разное</li>
         <li>4 типа: выбор варианта · ввод числа · слайдер · drag&drop сортировка</li>
+        <li>Ограничение времени на ответ: <strong>10/20/30 секунд</strong> по сложности</li>
         <li>После каждого ответа — пояснение</li>
         <li>В конце — детальная разбивка по разделам</li>
       </ul>
@@ -133,6 +136,7 @@ function SectionIntro({ section, onBegin }) {
       <ul className="info">
         <li>10 случайных вопросов из пула в {section.pool.length}</li>
         <li><strong>{section.points} {pointWord(section.points)}</strong> за каждый правильный ответ</li>
+        <li>⏱ <strong>{section.timeLimit} секунд</strong> на ответ — не успел = неверно</li>
         <li>Максимум за раздел: <strong>{section.points * 10} очков</strong></li>
       </ul>
       <button className="primary big" onClick={onBegin}>Поехали →</button>
