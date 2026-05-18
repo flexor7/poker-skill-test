@@ -27,13 +27,9 @@ npm run preview
 ## Деплой
 
 Каждый push в `main` автоматически собирает и публикует на GitHub Pages
-(см. `.github/workflows/deploy.yml`).
+(см. `.github/workflows/deploy.yml`). Pages уже включён в режиме «GitHub Actions».
 
-**Один раз нужно включить Pages в репо:**
-Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-
-После первого зелёного workflow сайт будет доступен на
-`https://flexor7.github.io/poker-skill-test/`.
+URL: https://flexor7.github.io/poker-skill-test/
 
 Если меняешь имя репозитория — поправь `base` в `vite.config.js`.
 
@@ -65,9 +61,11 @@ Settings → Pages → Build and deployment → Source: **GitHub Actions**.
 
 ## Совместный доступ
 
-Репо приватный. Чтобы дать доступ команде:
+Репо публичный — сам тест доступен по URL любому, у кого есть ссылка.
+Редактировать код могут только collaborators.
 
-Settings → Collaborators → Add people → выбрать роль (Read для просмотра, Write для коммитов).
+Чтобы добавить collaborator: Settings → Collaborators → Add people →
+роль Write (полные права на коммиты) или Read (только просмотр).
 
 Github не умеет «отзеркалить» доступы из другого репо автоматически — список нужно
 поддерживать вручную или вынести репо в организацию с teams.
