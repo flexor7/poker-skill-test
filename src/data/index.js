@@ -9,9 +9,9 @@ export const QUESTIONS_PER_SECTION = 10
 export const MAX_SCORE = 10 * 1 + 10 * 2 + 10 * 3
 
 export const SECTIONS = [
-  { id: 'easy', title: 'Лёгкий', subtitle: 'Правила, термины, базовая теория', points: 1, timeLimit: 10, pool: easyQuestions },
-  { id: 'medium', title: 'Средний', subtitle: 'Pot odds, equity, диапазоны', points: 2, timeLimit: 20, pool: mediumQuestions },
-  { id: 'hard', title: 'Сложный', subtitle: 'GTO-концепции, ICM, продвинутый постфлоп', points: 3, timeLimit: 30, pool: hardQuestions }
+  { id: 'easy', title: 'Лёгкий', subtitle: 'Правила, термины, базовая теория', points: 1, timeLimit: 15, pool: easyQuestions },
+  { id: 'medium', title: 'Средний', subtitle: 'Pot odds, equity, диапазоны', points: 2, timeLimit: 30, pool: mediumQuestions },
+  { id: 'hard', title: 'Сложный', subtitle: 'GTO-концепции, ICM, продвинутый постфлоп', points: 3, timeLimit: 45, pool: hardQuestions }
 ]
 
 export function pickN(arr, n) {
