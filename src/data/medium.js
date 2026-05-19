@@ -1317,5 +1317,64 @@ export const mediumQuestions = [
     ],
     correctIndex: 1,
     explanation: 'Calling 8 bb shove from UTG (very tight Nash range ~5-7%) на бабле с 25 bb middle stack: tighter than non-ICM. Top ~7% — 99+, AQs+, AKo. Even AJs marginal. ICM-pressure makes calling threshold higher even with good odds.'
+  },
+  {
+    id: 'm101',
+    type: 'action',
+    hand: { hero: ['Ah', 'Kc'], position: 'BB', stack: '14 bb' },
+    prompt: 'BB 14bb, BTN open 2bb. У тебя AKo. Действие?',
+    options: [
+      { id: 'fold', label: 'FOLD' },
+      { id: 'call', label: 'CALL' },
+      { id: 'raise', label: '3-BET' },
+      { id: 'shove', label: 'ALL-IN' }
+    ],
+    correctId: 'shove',
+    explanation: 'AKo с 14bb vs BTN open — стандартный 3-bet shove. Колл OOP сложен; маленький 3-bet pot-commits anyway. Шов получает максимум fold equity + защиту против overcards на bord.'
+  },
+  {
+    id: 'm102',
+    type: 'click-position',
+    prompt: 'Какая позиция считается лучшей для steal-открытия?',
+    seats: 9,
+    correctPosition: 'BTN',
+    explanation: 'BTN — лучшая steal-позиция: позади только SB и BB. Открывая 2.2-2.5x с BTN, ты крадешь блайнды с ~40-50% рук (с антэ — ещё шире).'
+  },
+  {
+    id: 'm103',
+    type: 'hand-battle',
+    prompt: 'Кто сильнее на этом флопе?',
+    board: ['Kh', '7d', '2c'],
+    hands: [
+      { id: 'A', label: 'A', cards: ['Ah', 'Kc'] },
+      { id: 'B', label: 'B', cards: ['9s', '9h'] }
+    ],
+    correctId: 'A',
+    explanation: 'AK сделал top pair top kicker. 99 — middle pair (under-pair to K). AK имеет ~85% к риверу. Классический пример: пара ниже доски слабее top pair хорошим кикером.'
+  },
+  {
+    id: 'm104',
+    type: 'equity-guess',
+    prompt: 'Equity AKs против JJ heads-up на префлопе?',
+    leftHand: ['As', 'Ks'],
+    rightHand: ['Jh', 'Jd'],
+    leftLabel: 'AKs',
+    rightLabel: 'JJ',
+    correctValue: 46,
+    tolerance: 5,
+    explanation: 'Карманная пара JJ имеет ~54% против AKs. Это классический "flip-not-flip": пара обычно фаворит против двух недоминированных оверкарт.'
+  },
+  {
+    id: 'm105',
+    type: 'stack-bet',
+    prompt: 'У тебя KK на флопе A-8-3 rainbow vs одного оппонента. Pot 100. C-bet sizing (% от пота)?',
+    pot: 100,
+    handHint: 'Hero KK, флоп A-8-3r. Один оппонент coll\'ed preflop.',
+    sliderMin: 0,
+    sliderMax: 150,
+    sliderStep: 5,
+    unit: '%',
+    correctRange: [25, 50],
+    explanation: 'KK на A-high флопе — relative slumdog: туз вероятно у оппонента или он защищается им. Маленький c-bet 25-40% pot — оптимум: дёшево извлекает фолды от не-Ax, не раздувает банк против Ax.'
   }
 ]

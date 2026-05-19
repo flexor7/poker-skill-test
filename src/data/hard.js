@@ -1272,5 +1272,64 @@ export const hardQuestions = [
     ],
     correctIndex: 1,
     explanation: 'Big stack edge на финалке: ICM-leverage. Middle stacks tight callers (стоит больше потерять чем выиграть). Big stack может open wide, 3-bet wide, c-bet aggressive. Fold equity huge без real risk. Это формирует chip-leader effect — больше выигрывает блайнды и pots без showdown.'
+  },
+  {
+    id: 'h101',
+    type: 'action',
+    hand: { hero: ['Qh', 'Qc'], position: 'CO', stack: '25 bb' },
+    prompt: 'Final 5 ICM. MP open 2.2x с 30bb. У тебя CO 25bb с QQ. Действие?',
+    options: [
+      { id: 'fold', label: 'FOLD' },
+      { id: 'call', label: 'CALL' },
+      { id: 'raise', label: '3-BET' },
+      { id: 'shove', label: 'ALL-IN' }
+    ],
+    correctId: 'shove',
+    explanation: 'QQ с 25bb на финалке 5 left — стандартный 3-bet shove. Колл оставит OOP-постфлоп. Маленький 3-bet pot-commits. Шов максимизирует FE: opener вынужден коллить только AA/KK/AK; QQ доминирует все calls кроме AA/KK.'
+  },
+  {
+    id: 'h102',
+    type: 'click-position',
+    prompt: 'Финальный стол 9 left. Какая позиция дает максимальное ICM-давление на blinds?',
+    seats: 9,
+    correctPosition: 'BTN',
+    explanation: 'BTN на финалке = максимальное ICM-leverage: позади только blinds, которые не могут шире колить из-за pay-jumps. Big stack на BTN атакует средние и короткие стеки максимально широко.'
+  },
+  {
+    id: 'h103',
+    type: 'hand-battle',
+    prompt: 'Кто сильнее на ривере?',
+    board: ['Kh', 'Qd', '7c', '4s', '2h'],
+    hands: [
+      { id: 'A', label: 'A', cards: ['Ad', 'Kc'] },
+      { id: 'B', label: 'B', cards: ['Qs', 'Qc'] }
+    ],
+    correctId: 'B',
+    explanation: 'AK на K-Q-7-4-2 — top pair top kicker. QQ — set (тройка дам). Set всегда бьет top pair: AK ~0% equity на ривере здесь. Сет на доске без paired/straight/flush draws — почти всегда натсы.'
+  },
+  {
+    id: 'h104',
+    type: 'equity-guess',
+    prompt: 'Equity AKs против пары 22 на префлопе (heads-up)?',
+    leftHand: ['Ah', 'Kh'],
+    rightHand: ['2d', '2c'],
+    leftLabel: 'AKs',
+    rightLabel: '22',
+    correctValue: 49,
+    tolerance: 5,
+    explanation: 'Знаменитый "flip" — почти равная игра ~50/50 (точнее 49/51 в пользу пары). Любая мелкая пара против двух оверкарт (suited или offsuit) даёт примерно coin-flip.'
+  },
+  {
+    id: 'h105',
+    type: 'stack-bet',
+    prompt: 'Polarized overbet на ривере с натсами + блефами. Pot 100. Оптимальный sizing (% pot)?',
+    pot: 100,
+    handHint: 'Polarized range — натсы или блефы, без middle hands.',
+    sliderMin: 50,
+    sliderMax: 250,
+    sliderStep: 5,
+    unit: '%',
+    correctRange: [125, 200],
+    explanation: 'Overbet (125-200% pot) — стандартный sizing для polarized ranges с nut advantage. Большая ставка форсирует binary решение у оппонента: его middle-strength руки не могут call. С balance bluff:value ratio (40% bluffs at 150% pot) — GTO-strategy.'
   }
 ]

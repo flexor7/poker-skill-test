@@ -1229,5 +1229,62 @@ export const easyQuestions = [
     unit: ' BI',
     correctRange: [100, 250],
     explanation: 'Стандарт BR-management для онлайн-MTT: 100-200 buy-in для одной линии. Меньше — слишком высокий risk of ruin (дисперсия в MTT огромна). Больше 300 — overkill для крепких регуляров. High-stakes требуют ещё более глубокого банка.'
+  },
+  {
+    id: 'e101',
+    type: 'action',
+    hand: { hero: ['Ah', 'As'], position: 'BTN', stack: '100 bb' },
+    prompt: 'Hero на BTN с AA, фолды до тебя. Действие?',
+    options: [
+      { id: 'fold', label: 'FOLD' },
+      { id: 'call', label: 'CALL' },
+      { id: 'raise', label: 'RAISE' },
+      { id: 'shove', label: 'ALL-IN' }
+    ],
+    correctId: 'raise',
+    explanation: 'AA на BTN — премиум, стандартный open-raise 2.2-2.5x. Лимп пассивный. Шов overkill — фолды соберут весь твой стек, никто не call без сильных рук.'
+  },
+  {
+    id: 'e102',
+    type: 'click-position',
+    prompt: 'Кто действует первым на префлопе в 9-handed?',
+    seats: 9,
+    correctPosition: 'UTG',
+    explanation: 'UTG ("под пушкой") — слева от BB, действует первым на префлопе. Самая ранняя и тайтная позиция за столом.'
+  },
+  {
+    id: 'e103',
+    type: 'hand-battle',
+    prompt: 'Какая рука сильнее на префлопе?',
+    hands: [
+      { id: 'A', label: 'A', cards: ['Ah', 'As'] },
+      { id: 'B', label: 'B', cards: ['7d', '2c'] }
+    ],
+    correctId: 'A',
+    explanation: 'AA против 72o — самое лопсайдное матчап префлоп. AA имеет ~88% equity. 72o — самая слабая стартовая рука в Hold\'em.'
+  },
+  {
+    id: 'e104',
+    type: 'equity-guess',
+    prompt: 'Equity AA против KK на префлопе (heads-up, all-in)?',
+    leftHand: ['Ah', 'As'],
+    rightHand: ['Kh', 'Ks'],
+    leftLabel: 'AA',
+    rightLabel: 'KK',
+    correctValue: 82,
+    tolerance: 5,
+    explanation: 'AA имеет ~82% против KK. Это доминирующая ситуация: KK выигрывает только при попадании в сет (~12%) или экзотических лайнах.'
+  },
+  {
+    id: 'e105',
+    type: 'hand-battle',
+    prompt: 'Какая рука сильнее на этом борде?',
+    board: ['Kh', '7d', '2c'],
+    hands: [
+      { id: 'A', label: 'A', cards: ['Ks', 'Qd'] },
+      { id: 'B', label: 'B', cards: ['Td', 'Th'] }
+    ],
+    correctId: 'A',
+    explanation: 'Top pair (пара королей) бьёт оверпару только если оверпара ниже доски. Здесь TT — middle pair (ниже K). KQ с top pair top kicker — сильнее.'
   }
 ]
