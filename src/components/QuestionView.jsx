@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { DndContext, closestCenter, PointerSensor, KeyboardSensor, useSensor, useSensors } from '@dnd-kit/core'
 import { SortableContext, arrayMove, useSortable, verticalListSortingStrategy, sortableKeyboardCoordinates } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import Hand from './Hand'
 import PokerTable from './PokerTable'
 import Timer from './Timer'
+import { getMultiplier, getSpeedBonus } from '../data'
 
 function checkAnswer(q, answer) {
   if (answer == null) return false
@@ -24,32 +25,56 @@ function checkAnswer(q, answer) {
   return false
 }
 
-export default function QuestionView({ q, onAnswer, isLast, difficulty, timeLimit }) {
+export default function QuestionView({ q, onAnswer, isLast, difficulty, timeLimit, basePoints, currentStreak }) {
   const [revealed, setRevealed] = useState(false)
   const [userAnswer, setUserAnswer] = useState(null)
   const [isCorrect, setIsCorrect] = useState(false)
   const [timedOut, setTimedOut] = useState(false)
+  const [earnedThisQ, setEarnedThisQ] = useState(0)
+  const [speedTier, setSpeedTier] = useState(0)
+  const startTimeRef = useRef(Date.now())
+  const elapsedMsRef = useRef(null)
 
   const submit = (answer) => {
     if (revealed) return
+    const elapsed = Date.now() - startTimeRef.current
+    elapsedMsRef.current = elapsed
     const correct = checkAnswer(q, answer)
+
+    let earned = 0
+    let bonusTier = 0
+    if (correct) {
+      const newStreak = (currentStreak ?? 0) + 1
+      const mult = getMultiplier(newStreak)
+      const speedBonus = getSpeedBonus(elapsed, timeLimit)
+      bonusTier = speedBonus === 1 ? 2 : speedBonus === 0.5 ? 1 : 0
+      earned = Math.round((basePoints ?? 1) * mult * (1 + speedBonus))
+    }
+
     setUserAnswer(answer)
     setIsCorrect(correct)
+    setEarnedThisQ(earned)
+    setSpeedTier(bonusTier)
     setRevealed(true)
   }
 
   const handleExpire = () => {
     if (revealed) return
+    elapsedMsRef.current = (timeLimit || 0) * 1000
     setTimedOut(true)
     setUserAnswer(null)
     setIsCorrect(false)
+    setEarnedThisQ(0)
     setRevealed(true)
   }
 
-  const next = () => onAnswer({ isCorrect, userAnswer, timedOut })
+  const next = () => onAnswer({ isCorrect, userAnswer, timedOut, elapsedMs: elapsedMsRef.current })
+
+  const newStreak = isCorrect ? (currentStreak ?? 0) + 1 : 0
+  const activeMult = getMultiplier(newStreak)
 
   return (
-    <div className="screen">
+    <div className="screen question-screen">
       <div className="question-header">
         <div className="difficulty-tag" data-level={difficulty}>{difficultyLabel(difficulty)}</div>
         {timeLimit && <Timer seconds={timeLimit} paused={revealed} onExpire={handleExpire} />}
@@ -74,10 +99,21 @@ export default function QuestionView({ q, onAnswer, isLast, difficulty, timeLimi
         <DnDSortInput q={q} revealed={revealed} userOrder={userAnswer} isCorrect={isCorrect} onSubmit={submit} />
       )}
 
+      {revealed && earnedThisQ > 0 && (
+        <div className="points-flash" key={earnedThisQ}>
+          +{earnedThisQ}
+          {activeMult > 1 && <span className="mult-tag">×{activeMult}</span>}
+          {speedTier === 1 && <span className="speed-tag">FAST</span>}
+          {speedTier === 2 && <span className="speed-tag double">BLAZING</span>}
+        </div>
+      )}
+
       {revealed && (
         <>
           <div className={`explanation ${isCorrect ? 'good' : timedOut ? 'timeout' : 'bad'}`}>
-            <strong>{isCorrect ? '✓ Верно.' : timedOut ? '⏱ Время вышло.' : '✗ Неверно.'}</strong> {q.explanation}
+            <strong>
+              {isCorrect ? '✓ Верно.' : timedOut ? '⏱ Время вышло.' : '✗ Неверно.'}
+            </strong> {q.explanation}
           </div>
           <button className="primary" onClick={next}>
             {isLast ? 'Итоги →' : 'Дальше →'}
